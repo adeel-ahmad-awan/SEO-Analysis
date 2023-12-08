@@ -70,6 +70,34 @@ You can run the job using the following command:
 php bin/console app:recheck-webpages
 ```
 
+## Database schema
+
+```
+Page
+-------------------------------------------
+id (PK)(int)
+url (string)
+title (string)
+description (text)
+issues (array)
+imageFile (text)
+-------------------------------------------
+                |
+                |
+                v
+             MetaTag
+-------------------------------------------
+id (PK)(int)
+name (string)
+content (string)
+page_id (FK)(int)
+-------------------------------------------
+```
+
+- Page entity has fields: id, url, title, description, issues, and imageFile.
+- MetaTag entity has fields: id, name, content, and page_id.
+- There is a relationship between Page and MetaTag through the page_id foreign key in the MetaTag entity.
+
 ## Author
 - Adeel Ahmad 
 - adeelahmadawan@gmail.com
