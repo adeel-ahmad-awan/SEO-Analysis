@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Preview{% endblock %}
+
+{% block body %}
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert {{ type }}">
+                <strong>{{type|capitalize}}!</strong> {{ message }}.
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="preview-form-url">
+        {{ form_start(form) }}
+        <div class="form-group">
+            {#        {{ form_label(form.url, 'Please enter the url here', {'label_attr': {'class': 'preview-form-url-label'}}) }}#}
+            {{ form_widget(form.url, {'attr': {'class': 'preview-form-url-input'}}) }}
+            {{ form_help(form.url) }}
+            {{ form_errors(form.url, {'attr': {'class': 'preview-form-url-input-error'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_widget(form.submit, {'attr': {'class': 'preview-form-url-submit'}}) }}
+        </div>
+        {{ form_end(form) }}
+
+        {# Display the preview image if the form is submitted and valid #}
+        {% if previewImage %}
+            <img src="/downloads/{{ previewImage }}" alt="Webpage Preview" class="preview-form-url-image">
+        {% endif %}
+    </div>
+
+{% endblock %}
