@@ -61,10 +61,6 @@ php bin/console doctrine:migrations:migrate
 - Input: Form submission with URL
 - Output: Preview image of the web page
 
-![ScreenShot Preview Route Before Form Submission](public/screenshots/Screenshot_Preview2.png "title-1")
-
-![ScreenShot Preview Route After Form Submission](public/screenshots/Screenshot_Preview.png "title-2")
-
 ## Background Job
 
 A background job app:recheck-webpages is available to periodically recheck all webpage URLs and update information in the database every hour.
@@ -105,7 +101,9 @@ page_id (FK)(int)
 ## Screen Shots
 
 
+![ScreenShot Preview Route Before Form Submission](public/screenshots/Screenshot_Preview2.png "title-1")
 
+![ScreenShot Preview Route After Form Submission](public/screenshots/Screenshot_Preview.png "title-2")
 
 ## Author
 - Adeel Ahmad 
