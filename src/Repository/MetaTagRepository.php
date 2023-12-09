@@ -40,8 +40,18 @@ class MetaTagRepository extends ServiceEntityRepository
         if (!$page) {
             return [];
         }
-        $metaTags = $page->getMetaTags();
+        $metaTags = $page->getMetaTag();
         return $metaTags->toArray();
+    }
+
+    /**
+     * @param MetaTag $metaTag
+     * @return void
+     */
+    function saveAndPresist(MetaTag $metaTag): void
+    {
+        $this->entityManager->persist($metaTag);
+        $this->entityManager->flush();
     }
 
 //    /**

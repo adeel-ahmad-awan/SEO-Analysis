@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  *
@@ -86,27 +88,22 @@ class SeoAnalysisController extends AbstractController
             // Retrieve URL from request
             $url = $request->request->get('url');
             if (empty($url)) {
-                return $this->json([
-                    'error' => 'URL is required.',
-                ], Response::HTTP_BAD_REQUEST);
+                $jsonResponse = ['error' => 'URL is required.'];
+                $responseCode = Response::HTTP_BAD_REQUEST;
+            } elseif (!$pageService->validUrl($url)) {
+                $jsonResponse = ['error' => 'Invalid page url provided, please provide a valid url'];
+                $responseCode = Response::HTTP_BAD_REQUEST;
+            } else {
+                $page = $pageService->saveAndAnalyze($url);
+                $jsonResponse = [
+                    'Url' => $page->getUrl(),
+                    'title' => $page->getTitle(),
+                    'description' => $page->getDescription(),
+                    'issues' => $page->getIssues(),
+                    'meta_tags' => $page->metaTagsToArray()
+                ];
+                $responseCode = Response::HTTP_OK;
             }
-            if(!$pageService->validUrl($url)) {
-                return $this->json(
-                    ['error' => 'Invalid page url provided, please provide a valid url']
-                    , Response::HTTP_BAD_REQUEST);
-            }
-
-            $page = $pageService->saveAndAnalyze($url);
-
-            $jsonResponse = [
-                'Url' => $page->getUrl(),
-                'title' => $page->getTitle(),
-                'description' => $page->getDescription(),
-                'issues' => $page->getIssues(),
-                'meta tags' => $page->metaTagsToArray()
-            ];
-
-            return $this->json($jsonResponse, Response::HTTP_OK);
         } catch (Exception $exception) {
             $this->logger->error('An error occurred while saving the page.', [
                 'message' => $exception->getMessage(),
@@ -114,9 +111,9 @@ class SeoAnalysisController extends AbstractController
                 'line' => $exception->getLine(),
                 'trace' => $exception->getTrace(),
             ]);
-            return $this->json([
-                'error' => 'An error occurred during SEO analysis.',
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            $jsonResponse = ['error' => 'An error occurred during SEO analysis.'];
+            $responseCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
+        return $this->json($jsonResponse, $responseCode);
     }
 }

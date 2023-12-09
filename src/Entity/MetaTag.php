@@ -6,6 +6,8 @@ use App\Repository\MetaTagRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\NoReturn;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  *
@@ -45,10 +47,9 @@ class MetaTag
      */
     private ?DateTimeImmutable $updatedAt = null;
 
-    /**
-     * @var Page|null
-     */
-    #[ORM\ManyToOne(inversedBy: 'metaTags')]
+    #[ORM\ManyToOne(inversedBy: 'metaTag')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['meta_tag'])]
     private ?Page $page = null;
 
     /**
@@ -150,24 +151,6 @@ class MetaTag
     }
 
     /**
-     * @return Page|null
-     */
-    public function getPage(): ?Page
-    {
-        return $this->page;
-    }
-
-    /**
-     * @param Page|null $page
-     * @return $this
-     */
-    public function setPage(?Page $page): static
-    {
-        $this->page = $page;
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function toArray(): array
@@ -176,5 +159,17 @@ class MetaTag
             'name' => $this->name,
             'content' => $this->content,
         ];
+    }
+
+    public function getPage(): ?Page
+    {
+        return $this->page;
+    }
+
+    public function setPage(?Page $page): static
+    {
+        $this->page = $page;
+
+        return $this;
     }
 }

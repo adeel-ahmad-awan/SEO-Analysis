@@ -52,10 +52,9 @@ use DOMDocument;
                 $metaTag->setName($tagName);
                 $metaTag->setContent($tagContent);
                 $metaTag->setPage($page);
-                $this->entityManager->persist($metaTag);
+                $this->metaTagRepository->saveAndPresist($metaTag);
             }
         }
-        $this->entityManager->flush();
     }
 
 

@@ -64,7 +64,7 @@ class PageRepository extends ServiceEntityRepository
 
     public function removeAllMetaTags(Page $page): void
     {
-        foreach ($page->getMetaTags() as $metaTag) {
+        foreach ($page->getMetaTag() as $metaTag) {
             $page->removeMetaTag($metaTag);
             $this->getEntityManager()->remove($metaTag);
         }

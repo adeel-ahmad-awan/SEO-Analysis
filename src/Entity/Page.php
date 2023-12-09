@@ -54,16 +54,18 @@ class Page
     #[ORM\Column(nullable: true)]
     private ?array $issues = null;
 
-    #[ORM\OneToMany(mappedBy: 'page', targetEntity: MetaTag::class)]
-    private Collection $metaTags;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageFile = null;
 
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: MetaTag::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $metaTag;
+
     public function __construct()
     {
-        $this->metaTags = new ArrayCollection();
+        $this->metaTag = new ArrayCollection();
     }
+
 
     /**
      * @return int|null
@@ -159,7 +161,6 @@ class Page
 
     /**
      * @ORM\PreUpdate
-     * @param DateTimeImmutable $updatedAt
      * @return $this
      */
     public function setUpdatedAt(): static
@@ -192,48 +193,6 @@ class Page
         return $this;
     }
 
-    /**
-     * @return Collection<int, MetaTag>
-     */
-    public function getMetaTags(): Collection
-    {
-        return $this->metaTags;
-    }
-
-    /**
-     * @return array
-     */
-    public function metaTagsToArray(): array
-    {
-        $metaTagsArray = [];
-        foreach ($this->metaTags as $metaTag) {
-            $metaTagsArray[] = $metaTag->toArray();
-        }
-        return $metaTagsArray;
-    }
-
-    public function addMetaTag(MetaTag $metaTag): static
-    {
-        if (!$this->metaTags->contains($metaTag)) {
-            $this->metaTags->add($metaTag);
-            $metaTag->setPage($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMetaTag(MetaTag $metaTag): static
-    {
-        if ($this->metaTags->removeElement($metaTag)) {
-            // set the owning side to null (unless already changed)
-            if ($metaTag->getPage() === $this) {
-                $metaTag->setPage(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getImageFile(): ?string
     {
         return $this->imageFile;
@@ -243,5 +202,47 @@ class Page
     {
         $this->imageFile = $imageFile;
         return $this;
+    }
+
+    /**
+     * @return Collection<int, MetaTag>
+     */
+    public function getMetaTag(): Collection
+    {
+        return $this->metaTag;
+    }
+
+    public function addMetaTag(MetaTag $metaTag): static
+    {
+        if (!$this->metaTag->contains($metaTag)) {
+            $this->metaTag->add($metaTag);
+            $metaTag->setPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMetaTag(MetaTag $metaTag): static
+    {
+        if ($this->metaTag->removeElement($metaTag)) {
+            // set the owning side to null (unless already changed)
+            if ($metaTag->getPage() === $this) {
+                $metaTag->setPage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function metaTagsToArray(): array
+    {
+        $metaTagsArray = [];
+        foreach ($this->metaTag as $metaTag) {
+            $metaTagsArray[] = $metaTag->toArray();
+        }
+        return $metaTagsArray;
     }
 }

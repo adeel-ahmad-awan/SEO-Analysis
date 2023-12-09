@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\Entity\MetaTag;
 use App\Entity\Page;
+use App\Repository\MetaTagRepository;
 use App\Repository\PageRepository;
 use Exception;
 use mikehaertl\wkhtmlto\Image;
@@ -18,6 +20,11 @@ use Symfony\Component\Filesystem\Filesystem;
 class PageService
 {
     /**
+     * regex for title
+     */
+    const TITLEREGEX = '/<title[^>]*>(.*?)<\/title>/ims';
+
+    /**
      * @var PageRepository $pageRepository
      */
     private PageRepository $pageRepository;
@@ -26,6 +33,8 @@ class PageService
      * @var MetaTagService
      */
     private MetaTagService $metaTagService;
+
+    private MetaTagRepository $metaTagRepository;
 
     /**
      * @var LoggerInterface $logger
@@ -40,17 +49,20 @@ class PageService
     /**
      * @param PageRepository $pageRepository
      * @param MetaTagService $metaTagService
+     * @param MetaTagRepository $metaTagRepository
      * @param LoggerInterface $logger
      * @param ContainerBagInterface $parameterBag
      */
     public function __construct(
         PageRepository $pageRepository,
         MetaTagService $metaTagService,
+        MetaTagRepository $metaTagRepository,
         LoggerInterface $logger,
         ContainerBagInterface $parameterBag
     ) {
         $this->pageRepository = $pageRepository;
         $this->metaTagService = $metaTagService;
+        $this->metaTagRepository = $metaTagRepository;
         $this->logger = $logger;
         $this->parameterBag = $parameterBag;
     }
@@ -122,7 +134,6 @@ class PageService
      * @return Page|null
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws Exception
      */
     public function saveAndAnalyze(string $url): ?Page
     {
@@ -144,7 +155,14 @@ class PageService
                 $pageIssues = $this->metaTagService->analyzeMetaTags($pageTags);
                 $page->setIssues($pageIssues);
                 $this->pageRepository->save($page);
-                $this->metaTagService->saveMetaTags($page, $pageTags);
+                foreach ($pageTags as $tagName => $tagContent) {
+                    $metaTag = new MetaTag();
+                    $metaTag->setName($tagName);
+                    $metaTag->setContent($tagContent);
+                    $metaTag->setPage($page);
+                    $this->metaTagRepository->saveAndPresist($metaTag);
+                    $page->addMetaTag($metaTag);
+                }
             }
             return ($page);
         } catch (Exception $exception) {
@@ -160,6 +178,9 @@ class PageService
 
 
     /**
+     * @param string $url
+     * @param string|null $previousImage
+     * @return string|null
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -205,7 +226,10 @@ class PageService
     }
 
     /**
-     * @throws Exception
+     * @param Page $page
+     * @return string
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function recheckPage(Page $page): string
     {
@@ -248,7 +272,7 @@ class PageService
         if ($pageContent === null) {
             return null;
         }
-        return preg_match('/<title[^>]*>(.*?)<\/title>/ims',
+        return preg_match(self::TITLEREGEX,
             $pageContent, $matches)
             ? $matches[1] : null;
     }
