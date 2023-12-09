@@ -38,19 +38,6 @@ class Page
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    /**
-     * @var DateTimeImmutable|null
-     * @ORM\Column(type="datetime", options={"default"="CURRENT_TIMESTAMP"})
-     * /
-     */
-    private ?DateTimeImmutable $createdAt = null;
-
-    /**
-     * @var DateTimeImmutable|null
-     * @ORM\Column(type="datetime", options={"default"="CURRENT_TIMESTAMP"})
-     */
-    private ?DateTimeImmutable $updatedAt = null;
-
     #[ORM\Column(nullable: true)]
     private ?array $issues = null;
 
@@ -133,71 +120,35 @@ class Page
     }
 
     /**
-     * @return DateTimeImmutable|null
+     * @return array|null
      */
-    public function getCreatedAt(): ?DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @param DateTimeImmutable $createdAt
-     * @return $this
-     */
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * @return DateTimeImmutable|null
-     */
-    public function getUpdatedAt(): ?DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @ORM\PreUpdate
-     * @return $this
-     */
-    public function setUpdatedAt(): static
-    {
-        $this->updatedAt = new DateTimeImmutable();
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setTimestampsOnCreate(): void
-    {
-        // Check if the createdAt property is not already set
-        if ($this->createdAt === null) {
-            $this->createdAt = new DateTimeImmutable();
-        }
-        // Always update the updatedAt property on create
-        $this->updatedAt = new DateTimeImmutable();
-    }
-
     public function getIssues(): ?array
     {
         return $this->issues;
     }
 
+    /**
+     * @param array|null $issues
+     * @return $this
+     */
     public function setIssues(?array $issues): static
     {
         $this->issues = $issues;
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getImageFile(): ?string
     {
         return $this->imageFile;
     }
 
+    /**
+     * @param string|null $imageFile
+     * @return $this
+     */
     public function setImageFile(?string $imageFile): static
     {
         $this->imageFile = $imageFile;
@@ -212,6 +163,10 @@ class Page
         return $this->metaTag;
     }
 
+    /**
+     * @param MetaTag $metaTag
+     * @return $this
+     */
     public function addMetaTag(MetaTag $metaTag): static
     {
         if (!$this->metaTag->contains($metaTag)) {
@@ -222,6 +177,10 @@ class Page
         return $this;
     }
 
+    /**
+     * @param MetaTag $metaTag
+     * @return $this
+     */
     public function removeMetaTag(MetaTag $metaTag): static
     {
         if ($this->metaTag->removeElement($metaTag)) {
