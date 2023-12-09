@@ -1,0 +1,22 @@
+Hi Akhil,
+
+I hope this note finds you well. I appreciate the opportunity to present my coding exercise. Here's a brief overview and some points for your review:
+
+
+Overview:
+
+- I have completed the coding exercise as per the provided specifications. The API layer is built in Symfony (PHP) and uses an SQL-based database to store information about web pages, specifically focusing on SEO issues related to meta tags. Additionally, I have implemented a background job that updates page information in the database every hour. The preview route is functional, providing a preview image of the web page loaded by the URL.
+
+Deployment:
+
+- I intended to deploy the Symfony app, but I encountered limitations with free hosting services. I explored options such as Heroku and render.com, but due to the nature of Symfony apps, I couldn't find a suitable free service. If you have any suggestions or guidance on this aspect, I would greatly appreciate it.
+
+Coding Practices:
+
+- I've adhered to good coding practices throughout the implementation. The code is structured and well-documented, following Symfony conventions. I have also included optional improvements where applicable.
+
+Repository and Pull Request:
+
+- The code has been pushed to a private repository on GitHub. I have granted you access to the repository, and I kindly request you to review the pull request. Additionally, I have assigned you as the reviewer.
+
+Thank you for your time and consideration. I'm open to any feedback or suggestions you may have.
